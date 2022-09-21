@@ -9,7 +9,9 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/codegangsta/negroni"
+	"github.com/danielmeloramos/trop-tech-linhas-areas-in-go/config"
+	_ "github.com/go-sql-driver/mysql"
+	"github.com/gorilla/context"
 	"github.com/gorilla/mux"
 )
 
@@ -21,20 +23,12 @@ func main() {
 	}
 	defer db.Close()
 
-	// bookRepo := repository.NewBookMySQL(db)
-	// bookService := book.NewService(bookRepo)
-
-	// loanUseCase := loan.NewService(bookService)
-
 	r := mux.NewRouter()
 
-	//handlers
-	n := negroni.New(
-		negroni.HandlerFunc(middleware.Cors),
-		negroni.NewLogger(),
-	)
-	//book
-	handler.MakeBookHandlers(r, *n, bookService)
+	http.Handle("/", r)
+	r.HandleFunc("/ping", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	})
 
 	logger := log.New(os.Stderr, "logger: ", log.Lshortfile)
 	srv := &http.Server{
